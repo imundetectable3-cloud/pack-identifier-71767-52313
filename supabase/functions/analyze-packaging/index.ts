@@ -26,38 +26,56 @@ Deno.serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are an expert food packaging material analyst specializing in Indian regulations and standards. Analyze the image and identify all packaging materials visible.
+    const systemPrompt = `You are an expert food packaging material analyst specializing in Indian FSSAI and BIS regulations. Analyze the packaging image carefully and identify ALL visible packaging materials with precise details.
 
-FOCUS: Only analyze FOOD PACKAGING materials.
+CRITICAL REQUIREMENTS:
+1. Be EXTREMELY specific with material identification:
+   - For plastics: Specify exact type (PET, HDPE, LDPE, PP, PS, PVC, etc.) and form (bottle, film, container, lid)
+   - For metals: Specify exact type (tin-plated steel, aluminum, tinplate) and form (can, foil, cap)
+   - For paper: Specify exact type (kraft paper, coated paperboard, corrugated board, wax paper)
+   - For composites: List all layers (e.g., "PE/AL/PET multilayer film")
 
-CRITICAL: Be very specific with material names. Examples:
-- Instead of "metal" say "tin-plated steel can" or "aluminum foil"
-- Instead of "plastic" say "PET bottle" or "HDPE container" or "PP film"
-- Instead of "paper" say "kraft paper" or "coated paperboard"
+2. Provide DETAILED regulatory compliance data:
+   - FSSAI limits: Include specific migration limits, heavy metal limits, and overall migration values
+   - BIS standards: Include density, tensile strength, thickness tolerances, and relevant IS codes
+   - Use exact numerical values with units (e.g., "Overall migration limit: 60 mg/kg (10 mg/dm²)")
 
-For each material detected, provide:
-- Detailed material type (be very specific, include exact type)
-- Chemical structure formula (e.g., "(C10H8O4)n" for PET, "C3H6" for PP)
-- FSSAI limit values: Provide as array of bullet points (e.g., ["Heavy metal: 1 ppm max", "Migration limit: 10 mg/kg"])
-- BIS standard values: Provide as array of bullet points (e.g., ["Thickness tolerance: ±5%", "Burst strength: 250 kPa min"])
-- Common thickness: Only number with unit (e.g., "50 microns")
-- Common GSM: Only number (e.g., "80")
-- Potential applications in food industry: Provide as array of bullet points (e.g., ["Beverage bottles", "Juice packaging", "Edible oil containers"])
+3. Technical specifications MUST be realistic:
+   - Thickness: Use appropriate units (microns for films, mm for rigid containers)
+   - GSM: Only for paper/board materials (typical range: 60-400)
+   - For non-paper materials, use "N/A" for GSM
 
-Return your analysis in JSON format with this structure:
+4. Food applications: List 3-5 specific, realistic food product categories
+
+RESPONSE FORMAT (strict JSON):
 {
   "materials": [
     {
-      "type": "string",
-      "chemicalFormula": "string",
-      "fssaiLimits": ["string", "string"],
-      "bisLimits": ["string", "string"],
-      "thickness": "string",
-      "gsm": "string",
-      "foodApplications": ["string", "string", "string"]
+      "type": "Specific material name with form (e.g., 'HDPE bottle', 'Aluminum foil', 'Kraft paper')",
+      "chemicalFormula": "Accurate formula (e.g., '(C2H4)n' for PE, 'Al' for aluminum, 'C6H10O5' for cellulose)",
+      "fssaiLimits": [
+        "Overall migration: [value] mg/kg or mg/dm²",
+        "Specific migration limits: [details]",
+        "Heavy metals (Pb, Cd, Hg, Cr): [values] ppm"
+      ],
+      "bisLimits": [
+        "Relevant BIS standard: IS [code]",
+        "Density: [value] g/cm³",
+        "Tensile strength: [value] MPa",
+        "Other specific parameters"
+      ],
+      "thickness": "Realistic value with unit (e.g., '25 microns', '1.5 mm')",
+      "gsm": "Number only for paper/board, 'N/A' for others",
+      "foodApplications": [
+        "Specific food category 1",
+        "Specific food category 2",
+        "Specific food category 3"
+      ]
     }
   ]
-}`;
+}
+
+IMPORTANT: Analyze thoroughly and return data for ALL identifiable materials in the packaging.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -114,17 +132,10 @@ Return your analysis in JSON format with this structure:
     const materialsWithImages = await Promise.all(
       analysis.materials.map(async (material: any) => {
         try {
-          const imagePrompt = `Create a detailed skeletal formula chemical structure diagram for ${material.chemicalFormula} (${material.type}). 
-Requirements:
-- Pure white background (#FFFFFF)
-- Black lines for bonds (#000000)
-- Show all carbon-carbon bonds as lines
-- Label heteroatoms (O, N, S, etc.)
-- Use standard chemistry textbook style
-- Clean, professional line drawing
-- No 3D effects, no shadows
-- Clear and precise molecular geometry
-- Show repeating units if polymer`;
+          // Simplified prompt for better image generation
+          const imagePrompt = `Draw a clean skeletal formula diagram of ${material.chemicalFormula} chemical structure. Pure white background, black lines only, chemistry textbook style, show repeating unit if polymer.`;
+          
+          console.log(`Generating structure for: ${material.type} (${material.chemicalFormula})`);
           
           const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",
@@ -144,24 +155,39 @@ Requirements:
             }),
           });
 
-          if (imageResponse.ok) {
-            const imageData = await imageResponse.json();
-            const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+          if (!imageResponse.ok) {
+            const errorText = await imageResponse.text();
+            console.error(`Image generation failed for ${material.type}:`, imageResponse.status, errorText);
             return {
               ...material,
-              chemicalStructureImage: imageUrl || null
+              chemicalStructureImage: null
             };
           }
+
+          const imageData = await imageResponse.json();
+          const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+          
+          if (imageUrl) {
+            console.log(`Successfully generated image for ${material.type}`);
+          } else {
+            console.warn(`No image URL returned for ${material.type}`);
+          }
+          
+          return {
+            ...material,
+            chemicalStructureImage: imageUrl || null
+          };
         } catch (error) {
-          console.error("Error generating structure image:", error);
+          console.error(`Error generating structure image for ${material.type}:`, error);
+          return {
+            ...material,
+            chemicalStructureImage: null
+          };
         }
-        
-        return {
-          ...material,
-          chemicalStructureImage: null
-        };
       })
     );
+
+    console.log(`Analysis complete. Generated ${materialsWithImages.filter(m => m.chemicalStructureImage).length}/${materialsWithImages.length} structure images`);
 
     return new Response(
       JSON.stringify({ materials: materialsWithImages }),
