@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Atom, FileText, Shield, Ruler, Weight, Utensils, Package } from "lucide-react";
 
 interface Material {
@@ -104,10 +104,10 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fade-in">
       {/* Selected Material Indicator (Compact at top when selected) */}
       {selectedMaterial !== null && (
-        <Card className="bg-muted/50">
+        <Card className="bg-muted/50 sticky top-2 z-10 backdrop-blur supports-[backdrop-filter]:bg-background/80 animate-fade-in">
           <CardContent className="py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -145,10 +145,18 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
                     setSelectedMaterial(index);
                     setSelectedProperty(null);
                   }}
-                  className="aspect-square h-auto p-3 flex flex-col gap-1.5 items-center justify-center"
+                  className="aspect-square w-20 sm:w-24 p-2 flex flex-col gap-1 items-center justify-center hover-scale"
                 >
-                  <Package className="w-5 h-5" />
-                  <span className="text-xs text-center leading-tight">{material.type}</span>
+                  {material.chemicalStructureImage ? (
+                    <img
+                      src={material.chemicalStructureImage}
+                      alt={`${material.type} chemical structure line diagram`}
+                      className="w-10 h-10 object-contain bg-white rounded border"
+                    />
+                  ) : (
+                    <Package className="w-5 h-5" />
+                  )}
+                  <span className="text-xs text-center leading-tight truncate w-full">{material.type}</span>
                 </Button>
               ))}
             </div>
@@ -174,7 +182,7 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
                       setSelectedProperty(btn.id);
                       setIsDialogOpen(true);
                     }}
-                    className="aspect-square h-auto p-2 flex flex-col gap-1 items-center justify-center"
+                    className="w-16 h-16 sm:w-20 sm:h-20 p-2 flex flex-col gap-1 items-center justify-center hover-scale"
                   >
                     <Icon className="w-4 h-4" />
                     <span className="text-[10px] text-center leading-tight">{btn.label}</span>
@@ -189,11 +197,12 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
       {/* Property Content Dialog */}
       {selectedMaterial !== null && selectedProperty && (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto animate-fade-in">
             <DialogHeader>
               <DialogTitle>
                 {materials[selectedMaterial].type} - {propertyButtons.find(b => b.id === selectedProperty)?.label}
               </DialogTitle>
+              <DialogDescription>Detailed information about the selected property.</DialogDescription>
             </DialogHeader>
             <div className="text-sm mt-4">
               {renderPropertyContent(materials[selectedMaterial], selectedProperty)}

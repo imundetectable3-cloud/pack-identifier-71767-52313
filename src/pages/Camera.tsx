@@ -60,51 +60,80 @@ const Camera = () => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "environment" } 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+        audio: false,
       });
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch(() => {});
+        };
       }
       setIsCameraMode(true);
       setSelectedImage(null);
       setAnalysis(null);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Camera Error",
-        description: "Failed to access camera. Please check permissions.",
+        description: error?.message || "Failed to access camera. Please check permissions.",
         variant: "destructive",
       });
     }
   };
 
   const capturePhoto = () => {
-    if (videoRef.current && streamRef.current) {
-      const canvas = document.createElement("canvas");
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0);
-        const imageData = canvas.toDataURL("image/jpeg");
-        setSelectedImage(imageData);
-        setIsCameraMode(false);
-        
-        // Stop all tracks
-        streamRef.current.getTracks().forEach(track => track.stop());
-        streamRef.current = null;
-        
+    const video = videoRef.current;
+    if (!video || !streamRef.current) return;
+
+    // Ensure video metadata is loaded
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      video.play().then(() => {
+        requestAnimationFrame(() => capturePhoto());
+      }).catch(() => {
         toast({
-          title: "Photo Captured",
-          description: "Image captured successfully. Click Analyze to proceed.",
+          title: "Camera not ready",
+          description: "Please wait a moment and try again.",
         });
-      }
+      });
+      return;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.drawImage(video, 0, 0);
+      const imageData = canvas.toDataURL("image/jpeg");
+      setSelectedImage(imageData);
+      setIsCameraMode(false);
+
+      // Stop all tracks
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+
+      toast({
+        title: "Photo Captured",
+        description: "Image captured successfully. Click Analyze to proceed.",
+      });
     }
   };
 
   const analyzeImage = async () => {
-    if (!selectedImage) return;
+    if (!selectedImage || !selectedImage.startsWith("data:image")) {
+      toast({
+        title: "No image",
+        description: "Please capture or upload a valid image before analyzing.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsAnalyzing(true);
     try {
@@ -123,7 +152,7 @@ const Camera = () => {
     } catch (error: any) {
       toast({
         title: "Analysis Failed",
-        description: error.message || "Failed to analyze the image. Please try again.",
+        description: error?.message || "Failed to analyze the image. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -248,14 +277,13 @@ const Camera = () => {
 
             {isCameraMode && (
               <div className="space-y-4">
-                <div className="relative w-full max-h-[400px] bg-gray-900 rounded-lg overflow-hidden">
+                <div className="relative w-full h-56 sm:h-64 bg-muted rounded-lg overflow-hidden animate-fade-in">
                   <video
                     ref={videoRef}
                     autoPlay
                     playsInline
                     muted
-                    className="w-full h-auto"
-                    style={{ maxHeight: '400px' }}
+                    className="w-full h-full object-contain"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -279,12 +307,14 @@ const Camera = () => {
             )}
 
             {selectedImage && !isCameraMode && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-fade-in">
                 <img
                   src={selectedImage}
                   alt="Selected packaging"
-                  className={`mx-auto rounded-lg shadow-md transition-all ${
-                    analysis ? "w-24 h-24 object-cover" : "w-full max-w-md max-h-96 object-contain"
+                  className={`${
+                    analysis
+                      ? "w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md border mx-auto"
+                      : "w-full max-w-md max-h-96 object-contain rounded-lg shadow-md mx-auto"
                   }`}
                 />
                 <div className="flex gap-2">
@@ -293,7 +323,7 @@ const Camera = () => {
                       <Button
                         onClick={analyzeImage}
                         disabled={isAnalyzing}
-                        className="flex-1"
+                        className="flex-1 hover-scale"
                         size="lg"
                       >
                         {isAnalyzing ? "Analyzing..." : "Analyze Packaging"}
@@ -311,7 +341,7 @@ const Camera = () => {
                       </Button>
                     </>
                   ) : (
-                    <div className="flex gap-2 w-full">
+                    <div className="flex gap-2 w-full justify-center">
                       <Button
                         onClick={saveAnalysis}
                         disabled={isSaving}
@@ -341,7 +371,7 @@ const Camera = () => {
 
         {/* Results Section */}
         {analysis && (
-          <div className="space-y-4">
+          <div className="space-y-4 animate-fade-in">
             <MaterialAnalysisView materials={analysis.materials} />
             <div className="flex justify-center gap-2">
               <Button
