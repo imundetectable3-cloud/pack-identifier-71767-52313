@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Camera as CameraIcon, Recycle, Leaf, Save } from "lucide-react";
+import { Upload, Camera as CameraIcon, Recycle, Leaf, Save, ThumbsUp, ThumbsDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
@@ -29,6 +29,7 @@ const Camera = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [isCameraMode, setIsCameraMode] = useState(false);
+  const [feedback, setFeedback] = useState<'positive' | 'negative' | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
@@ -106,6 +107,7 @@ const Camera = () => {
       if (error) throw error;
 
       setAnalysis(data);
+      setFeedback(null);
       toast({
         title: "Analysis Complete",
         description: "Packaging materials have been identified successfully.",
@@ -171,6 +173,16 @@ const Camera = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleFeedback = async (type: 'positive' | 'negative') => {
+    setFeedback(type);
+    toast({
+      title: type === 'positive' ? "Thanks for the feedback!" : "Feedback noted",
+      description: type === 'positive' 
+        ? "Your positive feedback helps improve our AI." 
+        : "We'll use this to improve our analysis accuracy.",
+    });
   };
 
   const getSustainabilityColor = (rating: number) => {
@@ -260,7 +272,7 @@ const Camera = () => {
                 <img
                   src={selectedImage}
                   alt="Selected packaging"
-                  className="w-full rounded-lg shadow-md"
+                  className="w-full max-w-md mx-auto max-h-96 object-contain rounded-lg shadow-md"
                 />
                 <div className="flex gap-2">
                   <Button
@@ -293,7 +305,25 @@ const Camera = () => {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Overall Analysis</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Overall Analysis</CardTitle>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={feedback === 'positive' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => handleFeedback('positive')}
+                    >
+                      <ThumbsUp className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant={feedback === 'negative' ? 'destructive' : 'outline'}
+                      size="sm"
+                      onClick={() => handleFeedback('negative')}
+                    >
+                      <ThumbsDown className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">{analysis.overallAnalysis}</p>

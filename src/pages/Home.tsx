@@ -39,24 +39,112 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Info Section */}
+      {/* Packaging Types Section */}
       <section className="container mx-auto px-4 py-12">
-        <Card className="max-w-3xl mx-auto bg-gradient-to-br from-card to-muted/20">
-          <CardHeader>
-            <CardTitle>About This Tool</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-muted-foreground">
-            <p>
-              This educational tool uses AI to help you understand the different types of packaging 
-              materials used in everyday products. Learn about sustainability, recyclability, and 
-              environmental impact of various packaging materials.
-            </p>
-            <p>
-              By understanding packaging materials, we can make more informed choices and contribute 
-              to a more sustainable future.
-            </p>
-          </CardContent>
-        </Card>
+        <h2 className="text-3xl font-bold text-center mb-8">Common Packaging Types</h2>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-blue-500/10">
+                  <Recycle className="w-5 h-5 text-blue-500" />
+                </div>
+                Plastic (PET/HDPE)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-2">
+                Bottles, containers, bags. Widely recyclable but petroleum-based.
+              </p>
+              <Badge className="bg-yellow-500/20 text-yellow-700 dark:text-yellow-300">Recyclable</Badge>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-green-500/10">
+                  <Leaf className="w-5 h-5 text-green-500" />
+                </div>
+                Cardboard/Paper
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-2">
+                Boxes, cartons. Biodegradable and highly recyclable.
+              </p>
+              <Badge className="bg-green-500/20 text-green-700 dark:text-green-300">Eco-Friendly</Badge>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-purple-500/10">
+                  <Recycle className="w-5 h-5 text-purple-500" />
+                </div>
+                Glass
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-2">
+                Jars, bottles. 100% recyclable and reusable indefinitely.
+              </p>
+              <Badge className="bg-green-500/20 text-green-700 dark:text-green-300">Highly Sustainable</Badge>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-orange-500/10">
+                  <Recycle className="w-5 h-5 text-orange-500" />
+                </div>
+                Metal (Aluminum)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-2">
+                Cans, foils. Energy-efficient to recycle, infinitely recyclable.
+              </p>
+              <Badge className="bg-green-500/20 text-green-700 dark:text-green-300">Recyclable</Badge>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-red-500/10">
+                  <Info className="w-5 h-5 text-red-500" />
+                </div>
+                Multi-Layer
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-2">
+                Tetra paks, chip bags. Multiple materials make recycling difficult.
+              </p>
+              <Badge className="bg-red-500/20 text-red-700 dark:text-red-300">Hard to Recycle</Badge>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-teal-500/10">
+                  <Leaf className="w-5 h-5 text-teal-500" />
+                </div>
+                Biodegradable
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-2">
+                Plant-based plastics, compostable materials. Breaks down naturally.
+              </p>
+              <Badge className="bg-green-500/20 text-green-700 dark:text-green-300">Eco-Friendly</Badge>
+            </CardContent>
+          </Card>
+        </div>
       </section>
 
       <Navigation />
