@@ -34,8 +34,7 @@ const Saved = () => {
         return;
       }
 
-      // @ts-ignore - Table exists, types will sync automatically
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("saved_analyses")
         .select("*")
         .eq("user_id", session.user.id)
@@ -81,8 +80,7 @@ const Saved = () => {
 
       if (storageError) console.error("Storage deletion error:", storageError);
 
-      // @ts-ignore - Table exists, types will sync automatically
-      const { error: dbError } = await supabase
+      const { error: dbError } = await (supabase as any)
         .from("saved_analyses")
         .delete()
         .eq("id", id);

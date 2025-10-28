@@ -153,8 +153,7 @@ const Camera = () => {
       if (uploadError) throw uploadError;
 
       // Save analysis to database
-      // @ts-ignore - Table exists, types will sync automatically
-      const { error: dbError } = await supabase
+      const { error: dbError } = await (supabase as any)
         .from("saved_analyses")
         .insert([{
           user_id: session.user.id,
