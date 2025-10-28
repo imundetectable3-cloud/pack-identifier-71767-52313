@@ -1,4 +1,6 @@
 
+-- Migration: 20251028045628
+
 -- Migration: 20251027095114
 -- Create profiles table for user information
 CREATE TABLE public.profiles (
@@ -180,3 +182,9 @@ using (
   bucket_id = 'analyses'
   and auth.uid()::text = (storage.foldername(name))[1]
 );
+
+
+-- Migration: 20251028050133
+-- Trigger types regeneration by adding table comment
+COMMENT ON TABLE public.saved_analyses IS 'Stores user packaging analysis results';
+COMMENT ON TABLE public.profiles IS 'User profile information';
