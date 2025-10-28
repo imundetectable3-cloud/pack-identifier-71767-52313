@@ -12,11 +12,11 @@ interface Material {
   type: string;
   chemicalFormula: string;
   chemicalStructureImage: string | null;
-  fssaiLimits: string;
-  bisLimits: string;
+  fssaiLimits: string[];
+  bisLimits: string[];
   thickness: string;
   gsm: string;
-  foodApplications: string;
+  foodApplications: string[];
 }
 
 interface SavedAnalysis {
@@ -184,10 +184,31 @@ const Saved = () => {
                                 className="w-32 h-24 object-contain bg-white rounded border"
                               />
                             )}
-                            <div className="text-xs space-y-1">
-                              <div><span className="font-medium">FSSAI:</span> {material.fssaiLimits}</div>
-                              <div><span className="font-medium">BIS:</span> {material.bisLimits}</div>
-                              <div><span className="font-medium">Applications:</span> {material.foodApplications}</div>
+                            <div className="text-xs space-y-2">
+                              <div>
+                                <span className="font-medium">FSSAI Limits:</span>
+                                <ul className="list-disc list-inside ml-2 mt-1">
+                                  {material.fssaiLimits.map((limit, i) => (
+                                    <li key={i}>{limit}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              <div>
+                                <span className="font-medium">BIS Standards:</span>
+                                <ul className="list-disc list-inside ml-2 mt-1">
+                                  {material.bisLimits.map((limit, i) => (
+                                    <li key={i}>{limit}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              <div>
+                                <span className="font-medium">Applications:</span>
+                                <ul className="list-disc list-inside ml-2 mt-1">
+                                  {material.foodApplications.map((app, i) => (
+                                    <li key={i}>{app}</li>
+                                  ))}
+                                </ul>
+                              </div>
                             </div>
                           </div>
                         ))}

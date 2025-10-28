@@ -38,11 +38,11 @@ CRITICAL: Be very specific with material names. Examples:
 For each material detected, provide:
 - Detailed material type (be very specific, include exact type)
 - Chemical structure formula (e.g., "(C10H8O4)n" for PET, "C3H6" for PP)
-- FSSAI limit values: Provide actual regulatory limits/values (e.g., "Maximum heavy metal: 1 ppm", "Migration limit: 10 mg/kg")
-- BIS standard values: Provide actual limit values (e.g., "Thickness tolerance: ±5%", "Burst strength: 250 kPa")
+- FSSAI limit values: Provide as array of bullet points (e.g., ["Heavy metal: 1 ppm max", "Migration limit: 10 mg/kg"])
+- BIS standard values: Provide as array of bullet points (e.g., ["Thickness tolerance: ±5%", "Burst strength: 250 kPa min"])
 - Common thickness: Only number with unit (e.g., "50 microns")
 - Common GSM: Only number (e.g., "80")
-- Potential applications in food industry: List 3-4 specific food applications
+- Potential applications in food industry: Provide as array of bullet points (e.g., ["Beverage bottles", "Juice packaging", "Edible oil containers"])
 
 Return your analysis in JSON format with this structure:
 {
@@ -50,11 +50,11 @@ Return your analysis in JSON format with this structure:
     {
       "type": "string",
       "chemicalFormula": "string",
-      "fssaiLimits": "string",
-      "bisLimits": "string",
+      "fssaiLimits": ["string", "string"],
+      "bisLimits": ["string", "string"],
       "thickness": "string",
       "gsm": "string",
-      "foodApplications": "string"
+      "foodApplications": ["string", "string", "string"]
     }
   ]
 }`;

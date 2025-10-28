@@ -13,11 +13,11 @@ interface Material {
   type: string;
   chemicalFormula: string;
   chemicalStructureImage: string | null;
-  fssaiLimits: string;
-  bisLimits: string;
+  fssaiLimits: string[];
+  bisLimits: string[];
   thickness: string;
   gsm: string;
-  foodApplications: string;
+  foodApplications: string[];
 }
 
 interface AnalysisResult {
@@ -379,15 +379,23 @@ const Camera = () => {
                       </div>
                     )}
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div>
-                        <p className="text-xs font-medium text-muted-foreground">FSSAI Limits</p>
-                        <p className="text-sm">{material.fssaiLimits}</p>
+                        <p className="text-xs font-medium text-muted-foreground mb-1">FSSAI Limits</p>
+                        <ul className="text-sm space-y-1 list-disc list-inside">
+                          {material.fssaiLimits.map((limit, idx) => (
+                            <li key={idx}>{limit}</li>
+                          ))}
+                        </ul>
                       </div>
 
                       <div>
-                        <p className="text-xs font-medium text-muted-foreground">BIS Standards</p>
-                        <p className="text-sm">{material.bisLimits}</p>
+                        <p className="text-xs font-medium text-muted-foreground mb-1">BIS Standards</p>
+                        <ul className="text-sm space-y-1 list-disc list-inside">
+                          {material.bisLimits.map((limit, idx) => (
+                            <li key={idx}>{limit}</li>
+                          ))}
+                        </ul>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2">
@@ -403,8 +411,12 @@ const Camera = () => {
                       </div>
 
                       <div>
-                        <p className="text-xs font-medium text-muted-foreground">Food Industry Applications</p>
-                        <p className="text-sm">{material.foodApplications}</p>
+                        <p className="text-xs font-medium text-muted-foreground mb-1">Food Industry Applications</p>
+                        <ul className="text-sm space-y-1 list-disc list-inside">
+                          {material.foodApplications.map((app, idx) => (
+                            <li key={idx}>{app}</li>
+                          ))}
+                        </ul>
                       </div>
                     </div>
                   </CardContent>
