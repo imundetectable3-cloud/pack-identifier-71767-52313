@@ -136,7 +136,7 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
             <CardTitle className="text-base">Select Component</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className={`grid gap-2 ${materials.length <= 2 ? 'grid-cols-2' : materials.length === 3 ? 'grid-cols-3' : 'grid-cols-2 md:grid-cols-4'}`}>
               {materials.map((material, index) => (
                 <Button
                   key={index}
@@ -145,10 +145,10 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
                     setSelectedMaterial(index);
                     setSelectedProperty(null);
                   }}
-                  className="aspect-square w-20 sm:w-24 p-2 flex flex-col gap-1 items-center justify-center hover-scale"
+                  className="h-20 p-2 flex flex-col gap-1 items-center justify-center hover-scale"
                 >
-                  <Package className="w-5 h-5" />
-                  <span className="text-xs text-center leading-tight truncate w-full">{material.type}</span>
+                  <Package className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-xs text-center leading-tight line-clamp-2">{material.type}</span>
                 </Button>
               ))}
             </div>
@@ -163,7 +163,7 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
             <CardTitle className="text-base">Select Property to View</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-1.5">
               {propertyButtons.map((btn) => {
                 const Icon = btn.icon;
                 return (
@@ -174,10 +174,10 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
                       setSelectedProperty(btn.id);
                       setIsDialogOpen(true);
                     }}
-                    className="w-16 h-16 sm:w-20 sm:h-20 p-2 flex flex-col gap-1 items-center justify-center hover-scale"
+                    className="h-16 p-1.5 flex flex-col gap-0.5 items-center justify-center hover-scale"
                   >
-                    <Icon className="w-4 h-4" />
-                    <span className="text-[10px] text-center leading-tight">{btn.label}</span>
+                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="text-[9px] text-center leading-tight">{btn.label}</span>
                   </Button>
                 );
               })}
