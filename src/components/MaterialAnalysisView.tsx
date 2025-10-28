@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Atom, FileText, Shield, Ruler, Weight, Utensils } from "lucide-react";
 
 interface Material {
   type: string;
@@ -24,12 +25,12 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
   const [selectedProperty, setSelectedProperty] = useState<PropertyType | null>(null);
 
   const propertyButtons = [
-    { id: "chemical" as PropertyType, label: "Chemical Structure" },
-    { id: "fssai" as PropertyType, label: "FSSAI Limits" },
-    { id: "bis" as PropertyType, label: "BIS Standards" },
-    { id: "thickness" as PropertyType, label: "Thickness" },
-    { id: "gsm" as PropertyType, label: "GSM" },
-    { id: "applications" as PropertyType, label: "Food Applications" },
+    { id: "chemical" as PropertyType, label: "Chemical Structure", icon: Atom },
+    { id: "fssai" as PropertyType, label: "FSSAI Limits", icon: FileText },
+    { id: "bis" as PropertyType, label: "BIS Standards", icon: Shield },
+    { id: "thickness" as PropertyType, label: "Thickness", icon: Ruler },
+    { id: "gsm" as PropertyType, label: "GSM", icon: Weight },
+    { id: "applications" as PropertyType, label: "Food Applications", icon: Utensils },
   ];
 
   const renderPropertyContent = (material: Material, property: PropertyType) => {
@@ -132,17 +133,21 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
             <CardTitle className="text-base">Select Property</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {propertyButtons.map((btn) => (
-                <Button
-                  key={btn.id}
-                  variant={selectedProperty === btn.id ? "default" : "outline"}
-                  onClick={() => setSelectedProperty(btn.id)}
-                  className="h-auto py-3"
-                >
-                  {btn.label}
-                </Button>
-              ))}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {propertyButtons.map((btn) => {
+                const Icon = btn.icon;
+                return (
+                  <Button
+                    key={btn.id}
+                    variant={selectedProperty === btn.id ? "default" : "outline"}
+                    onClick={() => setSelectedProperty(btn.id)}
+                    className="aspect-square h-auto p-4 flex flex-col gap-2 items-center justify-center"
+                  >
+                    <Icon className="w-6 h-6" />
+                    <span className="text-xs text-center leading-tight">{btn.label}</span>
+                  </Button>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
