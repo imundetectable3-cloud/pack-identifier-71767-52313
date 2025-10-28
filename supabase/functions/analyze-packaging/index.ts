@@ -114,7 +114,17 @@ Return your analysis in JSON format with this structure:
     const materialsWithImages = await Promise.all(
       analysis.materials.map(async (material: any) => {
         try {
-          const imagePrompt = `Generate a clean 2D chemical structure diagram for ${material.chemicalFormula}. White background, black molecular structure, skeletal formula style, professional chemistry textbook quality.`;
+          const imagePrompt = `Create a detailed skeletal formula chemical structure diagram for ${material.chemicalFormula} (${material.type}). 
+Requirements:
+- Pure white background (#FFFFFF)
+- Black lines for bonds (#000000)
+- Show all carbon-carbon bonds as lines
+- Label heteroatoms (O, N, S, etc.)
+- Use standard chemistry textbook style
+- Clean, professional line drawing
+- No 3D effects, no shadows
+- Clear and precise molecular geometry
+- Show repeating units if polymer`;
           
           const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",

@@ -248,13 +248,14 @@ const Camera = () => {
 
             {isCameraMode && (
               <div className="space-y-4">
-                <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+                <div className="relative w-full max-h-[400px] bg-gray-900 rounded-lg overflow-hidden">
                   <video
                     ref={videoRef}
                     autoPlay
                     playsInline
                     muted
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="w-full h-auto"
+                    style={{ maxHeight: '400px' }}
                   />
                 </div>
                 <div className="flex gap-2">
