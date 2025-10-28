@@ -277,24 +277,51 @@ const Camera = () => {
                   className="w-full max-w-md mx-auto max-h-96 object-contain rounded-lg shadow-md"
                 />
                 <div className="flex gap-2">
-                  <Button
-                    onClick={analyzeImage}
-                    disabled={isAnalyzing}
-                    className="flex-1"
-                    size="lg"
-                  >
-                    {isAnalyzing ? "Analyzing..." : "Analyze Packaging"}
-                  </Button>
-                  {analysis && (
-                    <Button
-                      onClick={saveAnalysis}
-                      disabled={isSaving}
-                      variant="outline"
-                      size="lg"
-                    >
-                      <Save className="w-5 h-5 mr-2" />
-                      {isSaving ? "Saving..." : "Save"}
-                    </Button>
+                  {!analysis ? (
+                    <>
+                      <Button
+                        onClick={analyzeImage}
+                        disabled={isAnalyzing}
+                        className="flex-1"
+                        size="lg"
+                      >
+                        {isAnalyzing ? "Analyzing..." : "Analyze Packaging"}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setSelectedImage(null);
+                          setAnalysis(null);
+                          setFeedback(null);
+                        }}
+                        variant="outline"
+                        size="lg"
+                      >
+                        Clear
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        onClick={saveAnalysis}
+                        disabled={isSaving}
+                        className="flex-1"
+                        size="lg"
+                      >
+                        <Save className="w-5 h-5 mr-2" />
+                        {isSaving ? "Saving..." : "Save"}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setSelectedImage(null);
+                          setAnalysis(null);
+                          setFeedback(null);
+                        }}
+                        variant="outline"
+                        size="lg"
+                      >
+                        New Analysis
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>
@@ -335,19 +362,19 @@ const Camera = () => {
             <div className="grid gap-6 md:grid-cols-2">
               {analysis.materials.map((material, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-xl">{material.type}</CardTitle>
-                        <CardDescription className="mt-1">
-                          {material.classification}
-                        </CardDescription>
-                      </div>
-                      <Badge className={getSustainabilityColor(material.sustainabilityRating)}>
-                        {material.sustainabilityRating}/5
-                      </Badge>
-                    </div>
-                  </CardHeader>
+              <CardHeader>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="text-xl break-words">{material.type}</CardTitle>
+                    <CardDescription className="mt-1 break-words">
+                      {material.classification}
+                    </CardDescription>
+                  </div>
+                  <Badge className={`${getSustainabilityColor(material.sustainabilityRating)} shrink-0`}>
+                    {material.sustainabilityRating}/5
+                  </Badge>
+                </div>
+              </CardHeader>
                   <CardContent className="space-y-4">
                     {material.plasticResinCode && (
                       <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
@@ -379,7 +406,7 @@ const Camera = () => {
                         <Recycle className="w-4 h-4 text-primary" />
                         Recyclability
                       </h4>
-                      <p className="text-sm text-muted-foreground">{material.recyclability}</p>
+                      <p className="text-sm text-muted-foreground break-words">{material.recyclability}</p>
                     </div>
 
                     <div>
@@ -394,12 +421,12 @@ const Camera = () => {
 
                     <div>
                       <h4 className="font-semibold mb-2">Common Uses</h4>
-                      <p className="text-sm text-muted-foreground">{material.commonUses}</p>
+                      <p className="text-sm text-muted-foreground break-words">{material.commonUses}</p>
                     </div>
 
                     <div>
                       <h4 className="font-semibold mb-2">Environmental Impact</h4>
-                      <p className="text-sm text-muted-foreground">{material.environmentalImpact}</p>
+                      <p className="text-sm text-muted-foreground break-words">{material.environmentalImpact}</p>
                     </div>
                   </CardContent>
                 </Card>
