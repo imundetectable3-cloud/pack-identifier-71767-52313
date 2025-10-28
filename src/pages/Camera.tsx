@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Upload, Camera as CameraIcon, Recycle, Leaf, Save, ThumbsUp, ThumbsDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
 
@@ -152,8 +153,11 @@ const Camera = () => {
 
       if (uploadError) throw uploadError;
 
+      // Use untyped client to avoid missing types during generation
+      const sb = supabase as unknown as SupabaseClient;
+
       // Save analysis to database
-      const { error: dbError } = await (supabase as any)
+      const { error: dbError } = await sb
         .from("saved_analyses")
         .insert([{
           user_id: session.user.id,

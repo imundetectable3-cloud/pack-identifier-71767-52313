@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Recycle, Leaf } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
 
@@ -34,7 +35,8 @@ const Saved = () => {
         return;
       }
 
-      const { data, error } = await (supabase as any)
+      const sb = supabase as unknown as SupabaseClient;
+      const { data, error } = await sb
         .from("saved_analyses")
         .select("*")
         .eq("user_id", session.user.id)
@@ -80,7 +82,8 @@ const Saved = () => {
 
       if (storageError) console.error("Storage deletion error:", storageError);
 
-      const { error: dbError } = await (supabase as any)
+      const sb = supabase as unknown as SupabaseClient;
+      const { error: dbError } = await sb
         .from("saved_analyses")
         .delete()
         .eq("id", id);
