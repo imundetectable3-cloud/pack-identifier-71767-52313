@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom";
 
 interface Material {
   type: string;
-  chemicalStructure: string;
+  chemicalFormula: string;
+  chemicalStructureImage: string | null;
   fssaiRegulation: string;
   bisStandards: string;
   thickness: string;
@@ -174,13 +175,19 @@ const Saved = () => {
                       <div className="space-y-3">
                         {analysis.materials.map((material, idx) => (
                           <div key={idx} className="space-y-2">
-                            <p className="font-semibold">{material.type}</p>
-                            <div className="text-xs space-y-1">
-                              <p><span className="font-medium">Chemical Structure:</span> {material.chemicalStructure}</p>
-                              <p><span className="font-medium">FSSAI:</span> {material.fssaiRegulation}</p>
-                              <p><span className="font-medium">BIS:</span> {material.bisStandards}</p>
-                              <p><span className="font-medium">Thickness:</span> {material.thickness}</p>
-                              <p><span className="font-medium">GSM:</span> {material.gsm}</p>
+                            <p className="font-semibold text-sm">{material.type}</p>
+                            {material.chemicalStructureImage && (
+                              <img 
+                                src={material.chemicalStructureImage} 
+                                alt="Chemical structure"
+                                className="w-32 h-24 object-contain bg-white rounded border"
+                              />
+                            )}
+                            <div className="text-xs grid grid-cols-2 gap-2">
+                              <div><span className="font-medium">FSSAI:</span> {material.fssaiRegulation}</div>
+                              <div><span className="font-medium">BIS:</span> {material.bisStandards}</div>
+                              <div><span className="font-medium">Thickness:</span> {material.thickness}</div>
+                              <div><span className="font-medium">GSM:</span> {material.gsm}</div>
                             </div>
                           </div>
                         ))}

@@ -11,7 +11,8 @@ import { useNavigate } from "react-router-dom";
 
 interface Material {
   type: string;
-  chemicalStructure: string;
+  chemicalFormula: string;
+  chemicalStructureImage: string | null;
   fssaiRegulation: string;
   bisStandards: string;
   thickness: string;
@@ -356,32 +357,41 @@ const Camera = () => {
               {analysis.materials.map((material, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
-                    <CardTitle className="text-xl">{material.type}</CardTitle>
+                    <CardTitle className="text-lg">{material.type}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-muted-foreground">Chemical Structure</p>
-                      <p className="text-sm">{material.chemicalStructure}</p>
-                    </div>
+                    {material.chemicalStructureImage && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">Chemical Structure</p>
+                        <img 
+                          src={material.chemicalStructureImage} 
+                          alt={`Chemical structure of ${material.type}`}
+                          className="w-full max-w-xs mx-auto bg-white p-2 rounded border"
+                        />
+                        <p className="text-xs text-center text-muted-foreground">{material.chemicalFormula}</p>
+                      </div>
+                    )}
 
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-muted-foreground">FSSAI Regulation</p>
-                      <p className="text-sm">{material.fssaiRegulation}</p>
-                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground">FSSAI</p>
+                        <p>{material.fssaiRegulation}</p>
+                      </div>
 
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-muted-foreground">BIS Standards</p>
-                      <p className="text-sm">{material.bisStandards}</p>
-                    </div>
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground">BIS</p>
+                        <p>{material.bisStandards}</p>
+                      </div>
 
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-muted-foreground">Thickness</p>
-                      <p className="text-sm">{material.thickness}</p>
-                    </div>
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground">Thickness</p>
+                        <p>{material.thickness}</p>
+                      </div>
 
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-muted-foreground">GSM</p>
-                      <p className="text-sm">{material.gsm}</p>
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground">GSM</p>
+                        <p>{material.gsm}</p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

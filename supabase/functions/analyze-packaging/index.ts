@@ -30,20 +30,25 @@ Deno.serve(async (req) => {
 
 FOCUS: Only analyze FOOD PACKAGING materials.
 
+CRITICAL: Be very specific with material names. Examples:
+- Instead of "metal" say "tin-plated steel can" or "aluminum foil"
+- Instead of "plastic" say "PET bottle" or "HDPE container" or "PP film"
+- Instead of "paper" say "kraft paper" or "coated paperboard"
+
 For each material detected, provide:
-- Material type
-- Chemical structure: Provide the actual chemical formula or polymer structure, not description
-- FSSAI regulations: Specific regulation numbers only, no brackets
-- BIS standards: Specific IS numbers only, no brackets
-- Common thickness: Number with unit only, no brackets
-- Common GSM: Number only, no brackets
+- Detailed material type (be very specific, include exact type)
+- Chemical structure formula (e.g., "(C10H8O4)n" for PET, "C3H6" for PP)
+- FSSAI regulations: Only regulation numbers (e.g., "FSS Regulation 2011")
+- BIS standards: Only IS numbers (e.g., "IS 10142:2017")
+- Common thickness: Only number with unit (e.g., "50 microns")
+- Common GSM: Only number (e.g., "80")
 
 Return your analysis in JSON format with this structure:
 {
   "materials": [
     {
       "type": "string",
-      "chemicalStructure": "string",
+      "chemicalFormula": "string",
       "fssaiRegulation": "string",
       "bisStandards": "string",
       "thickness": "string",
@@ -103,8 +108,51 @@ Return your analysis in JSON format with this structure:
 
     const analysis = JSON.parse(analysisText);
 
+    // Generate chemical structure images for each material
+    const materialsWithImages = await Promise.all(
+      analysis.materials.map(async (material: any) => {
+        try {
+          const imagePrompt = `Generate a clean 2D chemical structure diagram for ${material.chemicalFormula}. White background, black molecular structure, skeletal formula style, professional chemistry textbook quality.`;
+          
+          const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash-image-preview",
+              messages: [
+                {
+                  role: "user",
+                  content: imagePrompt
+                }
+              ],
+              modalities: ["image", "text"]
+            }),
+          });
+
+          if (imageResponse.ok) {
+            const imageData = await imageResponse.json();
+            const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+            return {
+              ...material,
+              chemicalStructureImage: imageUrl || null
+            };
+          }
+        } catch (error) {
+          console.error("Error generating structure image:", error);
+        }
+        
+        return {
+          ...material,
+          chemicalStructureImage: null
+        };
+      })
+    );
+
     return new Response(
-      JSON.stringify(analysis),
+      JSON.stringify({ materials: materialsWithImages }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
