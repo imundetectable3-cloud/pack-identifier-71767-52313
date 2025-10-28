@@ -12,10 +12,11 @@ interface Material {
   type: string;
   chemicalFormula: string;
   chemicalStructureImage: string | null;
-  fssaiRegulation: string;
-  bisStandards: string;
+  fssaiLimits: string;
+  bisLimits: string;
   thickness: string;
   gsm: string;
+  foodApplications: string;
 }
 
 interface SavedAnalysis {
@@ -174,7 +175,7 @@ const Saved = () => {
                     <CardContent>
                       <div className="space-y-3">
                         {analysis.materials.map((material, idx) => (
-                          <div key={idx} className="space-y-2">
+                          <div key={idx} className="space-y-2 pb-3 border-b last:border-0">
                             <p className="font-semibold text-sm">{material.type}</p>
                             {material.chemicalStructureImage && (
                               <img 
@@ -183,11 +184,10 @@ const Saved = () => {
                                 className="w-32 h-24 object-contain bg-white rounded border"
                               />
                             )}
-                            <div className="text-xs grid grid-cols-2 gap-2">
-                              <div><span className="font-medium">FSSAI:</span> {material.fssaiRegulation}</div>
-                              <div><span className="font-medium">BIS:</span> {material.bisStandards}</div>
-                              <div><span className="font-medium">Thickness:</span> {material.thickness}</div>
-                              <div><span className="font-medium">GSM:</span> {material.gsm}</div>
+                            <div className="text-xs space-y-1">
+                              <div><span className="font-medium">FSSAI:</span> {material.fssaiLimits}</div>
+                              <div><span className="font-medium">BIS:</span> {material.bisLimits}</div>
+                              <div><span className="font-medium">Applications:</span> {material.foodApplications}</div>
                             </div>
                           </div>
                         ))}

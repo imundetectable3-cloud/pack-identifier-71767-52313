@@ -13,10 +13,11 @@ interface Material {
   type: string;
   chemicalFormula: string;
   chemicalStructureImage: string | null;
-  fssaiRegulation: string;
-  bisStandards: string;
+  fssaiLimits: string;
+  bisLimits: string;
   thickness: string;
   gsm: string;
+  foodApplications: string;
 }
 
 interface AnalysisResult {
@@ -78,7 +79,7 @@ const Camera = () => {
   };
 
   const capturePhoto = () => {
-    if (videoRef.current) {
+    if (videoRef.current && streamRef.current) {
       const canvas = document.createElement("canvas");
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
@@ -88,9 +89,15 @@ const Camera = () => {
         const imageData = canvas.toDataURL("image/jpeg");
         setSelectedImage(imageData);
         setIsCameraMode(false);
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
-        }
+        
+        // Stop all tracks
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+        
+        toast({
+          title: "Photo Captured",
+          description: "Image captured successfully. Click Analyze to proceed.",
+        });
       }
     }
   };
@@ -359,7 +366,7 @@ const Camera = () => {
                   <CardHeader>
                     <CardTitle className="text-lg">{material.type}</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-4">
                     {material.chemicalStructureImage && (
                       <div className="space-y-1">
                         <p className="text-xs font-medium text-muted-foreground">Chemical Structure</p>
@@ -372,25 +379,32 @@ const Camera = () => {
                       </div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="space-y-2">
                       <div>
-                        <p className="text-xs font-medium text-muted-foreground">FSSAI</p>
-                        <p>{material.fssaiRegulation}</p>
+                        <p className="text-xs font-medium text-muted-foreground">FSSAI Limits</p>
+                        <p className="text-sm">{material.fssaiLimits}</p>
                       </div>
 
                       <div>
-                        <p className="text-xs font-medium text-muted-foreground">BIS</p>
-                        <p>{material.bisStandards}</p>
+                        <p className="text-xs font-medium text-muted-foreground">BIS Standards</p>
+                        <p className="text-sm">{material.bisLimits}</p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">Thickness</p>
+                          <p className="text-sm">{material.thickness}</p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">GSM</p>
+                          <p className="text-sm">{material.gsm}</p>
+                        </div>
                       </div>
 
                       <div>
-                        <p className="text-xs font-medium text-muted-foreground">Thickness</p>
-                        <p>{material.thickness}</p>
-                      </div>
-
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground">GSM</p>
-                        <p>{material.gsm}</p>
+                        <p className="text-xs font-medium text-muted-foreground">Food Industry Applications</p>
+                        <p className="text-sm">{material.foodApplications}</p>
                       </div>
                     </div>
                   </CardContent>
