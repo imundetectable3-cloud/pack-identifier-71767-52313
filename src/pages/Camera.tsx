@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 interface Material {
   type: string;
   classification: string;
+  plasticResinCode?: number | null;
+  layerComposition?: string | null;
   recyclability: string;
   biodegradable: boolean;
   commonUses: string;
@@ -347,6 +349,31 @@ const Camera = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {material.plasticResinCode && (
+                      <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                        <h4 className="font-semibold mb-1 text-blue-700 dark:text-blue-300">
+                          Plastic Resin Code
+                        </h4>
+                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                          #{material.plasticResinCode}
+                        </p>
+                      </div>
+                    )}
+
+                    {material.layerComposition && (
+                      <div className="p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                        <h4 className="font-semibold mb-2 text-purple-700 dark:text-purple-300">
+                          Layer Composition
+                        </h4>
+                        <p className="text-sm text-muted-foreground font-mono">
+                          {material.layerComposition}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          (Outside to Inside)
+                        </p>
+                      </div>
+                    )}
+
                     <div>
                       <h4 className="font-semibold mb-2 flex items-center gap-2">
                         <Recycle className="w-4 h-4 text-primary" />

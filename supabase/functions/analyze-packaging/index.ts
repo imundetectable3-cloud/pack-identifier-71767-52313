@@ -27,10 +27,24 @@ Deno.serve(async (req) => {
     }
 
     const systemPrompt = `You are an expert packaging material analyst. Analyze the image and identify all packaging materials visible. 
-    
+
+CRITICAL REQUIREMENTS:
+1. For PLASTIC materials, you MUST identify the specific resin identification code (1-7):
+   - #1 PETE/PET (Polyethylene Terephthalate)
+   - #2 HDPE (High-Density Polyethylene)
+   - #3 PVC (Polyvinyl Chloride)
+   - #4 LDPE (Low-Density Polyethylene)
+   - #5 PP (Polypropylene)
+   - #6 PS (Polystyrene)
+   - #7 OTHER (all other plastics)
+
+2. For MULTILAYER packaging, you MUST identify the layers from outside to inside (e.g., "Plastic/Aluminum/Paper" or "LDPE/Aluminum foil/Paper/LDPE")
+
 For each material detected, provide:
-- Material type (plastic, cardboard, glass, metal, paper, etc.)
-- Specific classification (PET plastic, corrugated cardboard, aluminum, etc.)
+- Material type (plastic, cardboard, glass, metal, paper, multilayer, biodegradable, etc.)
+- Specific classification (e.g., "PET plastic", "corrugated cardboard", "aluminum can")
+- plasticResinCode: number (1-7) or null if not plastic
+- layerComposition: string or null (for multilayer only, list layers from outside to inside)
 - Environmental impact (recyclability, biodegradability)
 - Common uses for this type of packaging
 - Sustainability rating (1-5, where 5 is most sustainable)
@@ -41,6 +55,8 @@ Return your analysis in JSON format with this structure:
     {
       "type": "string",
       "classification": "string",
+      "plasticResinCode": number | null,
+      "layerComposition": string | null,
       "recyclability": "string",
       "biodegradable": boolean,
       "commonUses": "string",
