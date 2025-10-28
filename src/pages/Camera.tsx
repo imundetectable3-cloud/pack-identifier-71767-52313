@@ -228,8 +228,8 @@ const Camera = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="container mx-auto px-4 py-6">
+    <div className="min-h-screen h-screen overflow-hidden bg-background pb-20 flex flex-col">
+      <div className="container mx-auto px-4 py-6 flex-1 overflow-y-auto">
         {/* Camera/Upload Section */}
         <Card className="mb-6">
           <CardHeader>

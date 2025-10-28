@@ -54,7 +54,7 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
               <img 
                 src={material.chemicalStructureImage} 
                 alt="Chemical structure"
-                className="w-full max-w-md mx-auto bg-white p-4 rounded border"
+                className="w-full max-w-sm h-48 mx-auto bg-white p-4 rounded border object-contain"
               />
             )}
             <ul className="list-disc list-inside space-y-1">
@@ -147,15 +147,7 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
                   }}
                   className="aspect-square w-20 sm:w-24 p-2 flex flex-col gap-1 items-center justify-center hover-scale"
                 >
-                  {material.chemicalStructureImage ? (
-                    <img
-                      src={material.chemicalStructureImage}
-                      alt={`${material.type} chemical structure line diagram`}
-                      className="w-10 h-10 object-contain bg-white rounded border"
-                    />
-                  ) : (
-                    <Package className="w-5 h-5" />
-                  )}
+                  <Package className="w-5 h-5" />
                   <span className="text-xs text-center leading-tight truncate w-full">{material.type}</span>
                 </Button>
               ))}
@@ -197,14 +189,14 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
       {/* Property Content Dialog */}
       {selectedMaterial !== null && selectedProperty && (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto animate-fade-in">
+          <DialogContent className="max-w-2xl animate-fade-in">
             <DialogHeader>
               <DialogTitle>
                 {materials[selectedMaterial].type} - {propertyButtons.find(b => b.id === selectedProperty)?.label}
               </DialogTitle>
               <DialogDescription>Detailed information about the selected property.</DialogDescription>
             </DialogHeader>
-            <div className="text-sm mt-4">
+            <div className="text-sm mt-4 max-h-[60vh] overflow-hidden">
               {renderPropertyContent(materials[selectedMaterial], selectedProperty)}
             </div>
           </DialogContent>
