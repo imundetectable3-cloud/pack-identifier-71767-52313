@@ -20,22 +20,8 @@ const Home = () => {
             </div>
           </div>
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-            Pack Identifier
+            PackScan
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Upload a photo of any product packaging and discover what materials it's made from. 
-            Learn about sustainability, recyclability, and environmental impact.
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Badge variant="secondary" className="text-base py-2 px-4">
-              <Leaf className="w-4 h-4 mr-2" />
-              Educational Tool
-            </Badge>
-            <Badge variant="secondary" className="text-base py-2 px-4">
-              <Info className="w-4 h-4 mr-2" />
-              Eco-Friendly
-            </Badge>
-          </div>
         </div>
       </section>
 
