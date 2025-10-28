@@ -248,12 +248,15 @@ const Camera = () => {
 
             {isCameraMode && (
               <div className="space-y-4">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full rounded-lg"
-                />
+                <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
                 <div className="flex gap-2">
                   <Button onClick={capturePhoto} className="flex-1" size="lg">
                     Capture Photo

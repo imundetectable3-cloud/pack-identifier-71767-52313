@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Atom, FileText, Shield, Ruler, Weight, Utensils } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Atom, FileText, Shield, Ruler, Weight, Utensils, Package } from "lucide-react";
 
 interface Material {
   type: string;
@@ -23,6 +24,7 @@ type PropertyType = "chemical" | "fssai" | "bis" | "thickness" | "gsm" | "applic
 export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) => {
   const [selectedMaterial, setSelectedMaterial] = useState<number | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<PropertyType | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const propertyButtons = [
     { id: "chemical" as PropertyType, label: "Chemical Structure", icon: Atom },
@@ -109,7 +111,7 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
           <CardTitle className="text-base">Select Component</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {materials.map((material, index) => (
               <Button
                 key={index}
@@ -118,8 +120,10 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
                   setSelectedMaterial(index);
                   setSelectedProperty(null);
                 }}
+                className="aspect-square h-auto p-3 flex flex-col gap-1.5 items-center justify-center"
               >
-                {material.type}
+                <Package className="w-5 h-5" />
+                <span className="text-xs text-center leading-tight">{material.type}</span>
               </Button>
             ))}
           </div>
@@ -133,18 +137,21 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
             <CardTitle className="text-base">Select Property</CardTitle>
           </CardHeader>
           <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
               {propertyButtons.map((btn) => {
                 const Icon = btn.icon;
                 return (
                   <Button
                     key={btn.id}
                     variant={selectedProperty === btn.id ? "default" : "outline"}
-                    onClick={() => setSelectedProperty(btn.id)}
-                    className="aspect-square h-auto p-4 flex flex-col gap-2 items-center justify-center"
+                    onClick={() => {
+                      setSelectedProperty(btn.id);
+                      setIsDialogOpen(true);
+                    }}
+                    className="aspect-square h-auto p-2 flex flex-col gap-1 items-center justify-center"
                   >
-                    <Icon className="w-6 h-6" />
-                    <span className="text-xs text-center leading-tight">{btn.label}</span>
+                    <Icon className="w-4 h-4" />
+                    <span className="text-[10px] text-center leading-tight">{btn.label}</span>
                   </Button>
                 );
               })}
@@ -153,18 +160,20 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
         </Card>
       )}
 
-      {/* Property Content Display */}
+      {/* Property Content Dialog */}
       {selectedMaterial !== null && selectedProperty && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
-              {materials[selectedMaterial].type} - {propertyButtons.find(b => b.id === selectedProperty)?.label}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm">
-            {renderPropertyContent(materials[selectedMaterial], selectedProperty)}
-          </CardContent>
-        </Card>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {materials[selectedMaterial].type} - {propertyButtons.find(b => b.id === selectedProperty)?.label}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="text-sm mt-4">
+              {renderPropertyContent(materials[selectedMaterial], selectedProperty)}
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
