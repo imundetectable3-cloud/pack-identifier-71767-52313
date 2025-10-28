@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 interface Material {
   type: string;
-  structure: string;
+  chemicalStructure: string;
   fssaiRegulation: string;
   bisStandards: string;
   thickness: string;
@@ -358,45 +358,30 @@ const Camera = () => {
                   <CardHeader>
                     <CardTitle className="text-xl">{material.type}</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <Package className="w-4 h-4 text-primary" />
-                        Structure
-                      </h4>
-                      <p className="text-sm text-muted-foreground break-words">{material.structure}</p>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-muted-foreground">Chemical Structure</p>
+                      <p className="text-sm">{material.chemicalStructure}</p>
                     </div>
 
-                    <div>
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <Info className="w-4 h-4 text-primary" />
-                        FSSAI Regulation
-                      </h4>
-                      <p className="text-sm text-muted-foreground break-words">{material.fssaiRegulation}</p>
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-muted-foreground">FSSAI Regulation</p>
+                      <p className="text-sm">{material.fssaiRegulation}</p>
                     </div>
 
-                    <div>
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <Leaf className="w-4 h-4 text-primary" />
-                        BIS Standards
-                      </h4>
-                      <p className="text-sm text-muted-foreground break-words">{material.bisStandards}</p>
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-muted-foreground">BIS Standards</p>
+                      <p className="text-sm">{material.bisStandards}</p>
                     </div>
 
-                    <div>
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <Recycle className="w-4 h-4 text-primary" />
-                        Thickness
-                      </h4>
-                      <p className="text-sm text-muted-foreground break-words">{material.thickness}</p>
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-muted-foreground">Thickness</p>
+                      <p className="text-sm">{material.thickness}</p>
                     </div>
 
-                    <div>
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
-                        <Package className="w-4 h-4 text-primary" />
-                        GSM
-                      </h4>
-                      <p className="text-sm text-muted-foreground break-words">{material.gsm}</p>
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-muted-foreground">GSM</p>
+                      <p className="text-sm">{material.gsm}</p>
                     </div>
                   </CardContent>
                 </Card>

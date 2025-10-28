@@ -31,19 +31,19 @@ Deno.serve(async (req) => {
 FOCUS: Only analyze FOOD PACKAGING materials.
 
 For each material detected, provide:
-- Material type (plastic, cardboard, glass, metal, paper, multilayer, biodegradable, etc.)
-- Structure/composition of the compound (detailed breakdown of material structure)
-- FSSAI regulations applicable for food packaging (specific regulation numbers and requirements)
-- BIS standards for food products (specific IS numbers and standards)
-- Common thickness used (in microns/mm)
-- Common GSM (grams per square meter) used
+- Material type
+- Chemical structure: Provide the actual chemical formula or polymer structure, not description
+- FSSAI regulations: Specific regulation numbers only, no brackets
+- BIS standards: Specific IS numbers only, no brackets
+- Common thickness: Number with unit only, no brackets
+- Common GSM: Number only, no brackets
 
 Return your analysis in JSON format with this structure:
 {
   "materials": [
     {
       "type": "string",
-      "structure": "string",
+      "chemicalStructure": "string",
       "fssaiRegulation": "string",
       "bisStandards": "string",
       "thickness": "string",

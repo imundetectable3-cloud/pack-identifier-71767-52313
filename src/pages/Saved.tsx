@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 interface Material {
   type: string;
-  structure: string;
+  chemicalStructure: string;
   fssaiRegulation: string;
   bisStandards: string;
   thickness: string;
@@ -173,13 +173,10 @@ const Saved = () => {
                     <CardContent>
                       <div className="space-y-3">
                         {analysis.materials.map((material, idx) => (
-                          <div
-                            key={idx}
-                            className="p-3 rounded-lg bg-muted/50 space-y-2"
-                          >
+                          <div key={idx} className="space-y-2">
                             <p className="font-semibold">{material.type}</p>
-                            <div className="text-xs space-y-1 text-muted-foreground">
-                              <p><span className="font-medium">Structure:</span> {material.structure}</p>
+                            <div className="text-xs space-y-1">
+                              <p><span className="font-medium">Chemical Structure:</span> {material.chemicalStructure}</p>
                               <p><span className="font-medium">FSSAI:</span> {material.fssaiRegulation}</p>
                               <p><span className="font-medium">BIS:</span> {material.bisStandards}</p>
                               <p><span className="font-medium">Thickness:</span> {material.thickness}</p>
