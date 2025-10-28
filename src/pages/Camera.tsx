@@ -13,11 +13,11 @@ interface Material {
   type: string;
   chemicalFormula: string;
   chemicalStructureImage: string | null;
-  fssaiLimits: string[];
-  bisLimits: string[];
+  fssaiLimits: string[] | string;
+  bisLimits: string[] | string;
   thickness: string;
   gsm: string;
-  foodApplications: string[];
+  foodApplications: string[] | string;
 }
 
 interface AnalysisResult {
@@ -361,67 +361,80 @@ const Camera = () => {
             </Card>
 
             <div className="grid gap-6 md:grid-cols-2">
-              {analysis.materials.map((material, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-lg">{material.type}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {material.chemicalStructureImage && (
-                      <div className="space-y-1">
-                        <p className="text-xs font-medium text-muted-foreground">Chemical Structure</p>
-                        <img 
-                          src={material.chemicalStructureImage} 
-                          alt={`Chemical structure of ${material.type}`}
-                          className="w-full max-w-xs mx-auto bg-white p-2 rounded border"
-                        />
-                        <p className="text-xs text-center text-muted-foreground">{material.chemicalFormula}</p>
-                      </div>
-                    )}
+              {analysis.materials.map((material, index) => {
+                // Handle both array and string formats for backwards compatibility
+                const fssaiLimits = Array.isArray(material.fssaiLimits) 
+                  ? material.fssaiLimits 
+                  : [material.fssaiLimits];
+                const bisLimits = Array.isArray(material.bisLimits)
+                  ? material.bisLimits
+                  : [material.bisLimits];
+                const foodApplications = Array.isArray(material.foodApplications)
+                  ? material.foodApplications
+                  : [material.foodApplications];
 
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-1">FSSAI Limits</p>
-                        <ul className="text-sm space-y-1 list-disc list-inside">
-                          {material.fssaiLimits.map((limit, idx) => (
-                            <li key={idx}>{limit}</li>
-                          ))}
-                        </ul>
-                      </div>
+                return (
+                  <Card key={index} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <CardTitle className="text-lg">{material.type}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {material.chemicalStructureImage && (
+                        <div className="space-y-1">
+                          <p className="text-xs font-medium text-muted-foreground">Chemical Structure</p>
+                          <img 
+                            src={material.chemicalStructureImage} 
+                            alt={`Chemical structure of ${material.type}`}
+                            className="w-full max-w-xs mx-auto bg-white p-2 rounded border"
+                          />
+                          <p className="text-xs text-center text-muted-foreground">{material.chemicalFormula}</p>
+                        </div>
+                      )}
 
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-1">BIS Standards</p>
-                        <ul className="text-sm space-y-1 list-disc list-inside">
-                          {material.bisLimits.map((limit, idx) => (
-                            <li key={idx}>{limit}</li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-3">
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground">Thickness</p>
-                          <p className="text-sm">{material.thickness}</p>
+                          <p className="text-xs font-medium text-muted-foreground mb-1">FSSAI Limits</p>
+                          <ul className="text-sm space-y-1 list-disc list-inside">
+                            {fssaiLimits.map((limit, idx) => (
+                              <li key={idx}>{limit}</li>
+                            ))}
+                          </ul>
                         </div>
 
                         <div>
-                          <p className="text-xs font-medium text-muted-foreground">GSM</p>
-                          <p className="text-sm">{material.gsm}</p>
+                          <p className="text-xs font-medium text-muted-foreground mb-1">BIS Standards</p>
+                          <ul className="text-sm space-y-1 list-disc list-inside">
+                            {bisLimits.map((limit, idx) => (
+                              <li key={idx}>{limit}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground">Thickness</p>
+                            <p className="text-sm">{material.thickness}</p>
+                          </div>
+
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground">GSM</p>
+                            <p className="text-sm">{material.gsm}</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-1">Food Industry Applications</p>
+                          <ul className="text-sm space-y-1 list-disc list-inside">
+                            {foodApplications.map((app, idx) => (
+                              <li key={idx}>{app}</li>
+                            ))}
+                          </ul>
                         </div>
                       </div>
-
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-1">Food Industry Applications</p>
-                        <ul className="text-sm space-y-1 list-disc list-inside">
-                          {material.foodApplications.map((app, idx) => (
-                            <li key={idx}>{app}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         )}

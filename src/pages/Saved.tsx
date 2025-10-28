@@ -12,11 +12,11 @@ interface Material {
   type: string;
   chemicalFormula: string;
   chemicalStructureImage: string | null;
-  fssaiLimits: string[];
-  bisLimits: string[];
+  fssaiLimits: string[] | string;
+  bisLimits: string[] | string;
   thickness: string;
   gsm: string;
-  foodApplications: string[];
+  foodApplications: string[] | string;
 }
 
 interface SavedAnalysis {
@@ -174,44 +174,57 @@ const Saved = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        {analysis.materials.map((material, idx) => (
-                          <div key={idx} className="space-y-2 pb-3 border-b last:border-0">
-                            <p className="font-semibold text-sm">{material.type}</p>
-                            {material.chemicalStructureImage && (
-                              <img 
-                                src={material.chemicalStructureImage} 
-                                alt="Chemical structure"
-                                className="w-32 h-24 object-contain bg-white rounded border"
-                              />
-                            )}
-                            <div className="text-xs space-y-2">
-                              <div>
-                                <span className="font-medium">FSSAI Limits:</span>
-                                <ul className="list-disc list-inside ml-2 mt-1">
-                                  {material.fssaiLimits.map((limit, i) => (
-                                    <li key={i}>{limit}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                              <div>
-                                <span className="font-medium">BIS Standards:</span>
-                                <ul className="list-disc list-inside ml-2 mt-1">
-                                  {material.bisLimits.map((limit, i) => (
-                                    <li key={i}>{limit}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                              <div>
-                                <span className="font-medium">Applications:</span>
-                                <ul className="list-disc list-inside ml-2 mt-1">
-                                  {material.foodApplications.map((app, i) => (
-                                    <li key={i}>{app}</li>
-                                  ))}
-                                </ul>
+                        {analysis.materials.map((material, idx) => {
+                          // Handle both array and string formats
+                          const fssaiLimits = Array.isArray(material.fssaiLimits) 
+                            ? material.fssaiLimits 
+                            : [material.fssaiLimits];
+                          const bisLimits = Array.isArray(material.bisLimits)
+                            ? material.bisLimits
+                            : [material.bisLimits];
+                          const foodApplications = Array.isArray(material.foodApplications)
+                            ? material.foodApplications
+                            : [material.foodApplications];
+
+                          return (
+                            <div key={idx} className="space-y-2 pb-3 border-b last:border-0">
+                              <p className="font-semibold text-sm">{material.type}</p>
+                              {material.chemicalStructureImage && (
+                                <img 
+                                  src={material.chemicalStructureImage} 
+                                  alt="Chemical structure"
+                                  className="w-32 h-24 object-contain bg-white rounded border"
+                                />
+                              )}
+                              <div className="text-xs space-y-2">
+                                <div>
+                                  <span className="font-medium">FSSAI Limits:</span>
+                                  <ul className="list-disc list-inside ml-2 mt-1">
+                                    {fssaiLimits.map((limit, i) => (
+                                      <li key={i}>{limit}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                                <div>
+                                  <span className="font-medium">BIS Standards:</span>
+                                  <ul className="list-disc list-inside ml-2 mt-1">
+                                    {bisLimits.map((limit, i) => (
+                                      <li key={i}>{limit}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                                <div>
+                                  <span className="font-medium">Applications:</span>
+                                  <ul className="list-disc list-inside ml-2 mt-1">
+                                    {foodApplications.map((app, i) => (
+                                      <li key={i}>{app}</li>
+                                    ))}
+                                  </ul>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </CardContent>
                   </div>
