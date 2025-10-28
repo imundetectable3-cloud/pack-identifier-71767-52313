@@ -1,18 +1,26 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2, Recycle, Leaf } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
 
+interface Material {
+  type: string;
+  structure: string;
+  fssaiRegulation: string;
+  bisStandards: string;
+  thickness: string;
+  gsm: string;
+}
+
 interface SavedAnalysis {
   id: string;
   image_url: string;
-  materials: any;
+  materials: Material[];
   overall_analysis: string;
   created_at: string;
 }
@@ -104,12 +112,6 @@ const Saved = () => {
     }
   };
 
-  const getSustainabilityColor = (rating: number) => {
-    if (rating >= 4) return "bg-primary text-primary-foreground";
-    if (rating >= 3) return "bg-secondary text-secondary-foreground";
-    return "bg-destructive text-destructive-foreground";
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background pb-20 flex items-center justify-center">
@@ -170,27 +172,18 @@ const Saved = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        {analysis.materials.map((material: any, idx: number) => (
+                        {analysis.materials.map((material, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                            className="p-3 rounded-lg bg-muted/50 space-y-2"
                           >
-                            <div className="flex-1">
-                              <p className="font-semibold">{material.type}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {material.classification}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {material.biodegradable && (
-                                <Badge variant="outline">
-                                  <Leaf className="w-3 h-3 mr-1" />
-                                  Bio
-                                </Badge>
-                              )}
-                              <Badge className={getSustainabilityColor(material.sustainabilityRating)}>
-                                {material.sustainabilityRating}/5
-                              </Badge>
+                            <p className="font-semibold">{material.type}</p>
+                            <div className="text-xs space-y-1 text-muted-foreground">
+                              <p><span className="font-medium">Structure:</span> {material.structure}</p>
+                              <p><span className="font-medium">FSSAI:</span> {material.fssaiRegulation}</p>
+                              <p><span className="font-medium">BIS:</span> {material.bisStandards}</p>
+                              <p><span className="font-medium">Thickness:</span> {material.thickness}</p>
+                              <p><span className="font-medium">GSM:</span> {material.gsm}</p>
                             </div>
                           </div>
                         ))}

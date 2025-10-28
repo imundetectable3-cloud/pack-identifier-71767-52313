@@ -26,45 +26,30 @@ Deno.serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are an expert packaging material analyst. Analyze the image and identify all packaging materials visible. 
+    const systemPrompt = `You are an expert food packaging material analyst specializing in Indian regulations and standards. Analyze the image and identify all packaging materials visible.
 
-CRITICAL REQUIREMENTS:
-1. For PLASTIC materials, you MUST identify the specific resin identification code (1-7):
-   - #1 PETE/PET (Polyethylene Terephthalate)
-   - #2 HDPE (High-Density Polyethylene)
-   - #3 PVC (Polyvinyl Chloride)
-   - #4 LDPE (Low-Density Polyethylene)
-   - #5 PP (Polypropylene)
-   - #6 PS (Polystyrene)
-   - #7 OTHER (all other plastics)
-
-2. For MULTILAYER packaging, you MUST identify the layers from outside to inside (e.g., "Plastic/Aluminum/Paper" or "LDPE/Aluminum foil/Paper/LDPE")
+FOCUS: Only analyze FOOD PACKAGING materials.
 
 For each material detected, provide:
 - Material type (plastic, cardboard, glass, metal, paper, multilayer, biodegradable, etc.)
-- Specific classification (e.g., "PET plastic", "corrugated cardboard", "aluminum can")
-- plasticResinCode: number (1-7) or null if not plastic
-- layerComposition: string or null (for multilayer only, list layers from outside to inside)
-- Environmental impact (recyclability, biodegradability)
-- Common uses for this type of packaging
-- Sustainability rating (1-5, where 5 is most sustainable)
+- Structure/composition of the compound (detailed breakdown of material structure)
+- FSSAI regulations applicable for food packaging (specific regulation numbers and requirements)
+- BIS standards for food products (specific IS numbers and standards)
+- Common thickness used (in microns/mm)
+- Common GSM (grams per square meter) used
 
 Return your analysis in JSON format with this structure:
 {
   "materials": [
     {
       "type": "string",
-      "classification": "string",
-      "plasticResinCode": number | null,
-      "layerComposition": string | null,
-      "recyclability": "string",
-      "biodegradable": boolean,
-      "commonUses": "string",
-      "sustainabilityRating": number,
-      "environmentalImpact": "string"
+      "structure": "string",
+      "fssaiRegulation": "string",
+      "bisStandards": "string",
+      "thickness": "string",
+      "gsm": "string"
     }
-  ],
-  "overallAnalysis": "string"
+  ]
 }`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
