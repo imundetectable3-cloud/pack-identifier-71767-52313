@@ -105,36 +105,62 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
 
   return (
     <div className="space-y-4">
-      {/* Material Selection Buttons */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Select Component</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {materials.map((material, index) => (
+      {/* Selected Material Indicator (Compact at top when selected) */}
+      {selectedMaterial !== null && (
+        <Card className="bg-muted/50">
+          <CardContent className="py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                <span className="text-sm font-medium">{materials[selectedMaterial].type}</span>
+              </div>
               <Button
-                key={index}
-                variant={selectedMaterial === index ? "default" : "outline"}
+                variant="ghost"
+                size="sm"
                 onClick={() => {
-                  setSelectedMaterial(index);
+                  setSelectedMaterial(null);
                   setSelectedProperty(null);
                 }}
-                className="aspect-square h-auto p-3 flex flex-col gap-1.5 items-center justify-center"
               >
-                <Package className="w-5 h-5" />
-                <span className="text-xs text-center leading-tight">{material.type}</span>
+                Change Component
               </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Material Selection Buttons */}
+      {selectedMaterial === null && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Select Component</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {materials.map((material, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedMaterial(index);
+                    setSelectedProperty(null);
+                  }}
+                  className="aspect-square h-auto p-3 flex flex-col gap-1.5 items-center justify-center"
+                >
+                  <Package className="w-5 h-5" />
+                  <span className="text-xs text-center leading-tight">{material.type}</span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Property Selection Buttons */}
       {selectedMaterial !== null && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Select Property</CardTitle>
+            <CardTitle className="text-base">Select Property to View</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-2">

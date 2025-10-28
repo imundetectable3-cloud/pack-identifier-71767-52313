@@ -283,7 +283,9 @@ const Camera = () => {
                 <img
                   src={selectedImage}
                   alt="Selected packaging"
-                  className="w-full max-w-md mx-auto max-h-96 object-contain rounded-lg shadow-md"
+                  className={`mx-auto rounded-lg shadow-md transition-all ${
+                    analysis ? "w-24 h-24 object-cover" : "w-full max-w-md max-h-96 object-contain"
+                  }`}
                 />
                 <div className="flex gap-2">
                   {!analysis ? (
@@ -309,14 +311,13 @@ const Camera = () => {
                       </Button>
                     </>
                   ) : (
-                    <>
+                    <div className="flex gap-2 w-full">
                       <Button
                         onClick={saveAnalysis}
                         disabled={isSaving}
-                        className="flex-1"
-                        size="lg"
+                        size="sm"
                       >
-                        <Save className="w-5 h-5 mr-2" />
+                        <Save className="w-4 h-4 mr-1" />
                         {isSaving ? "Saving..." : "Save"}
                       </Button>
                       <Button
@@ -326,11 +327,11 @@ const Camera = () => {
                           setFeedback(null);
                         }}
                         variant="outline"
-                        size="lg"
+                        size="sm"
                       >
                         New Analysis
                       </Button>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
@@ -340,32 +341,24 @@ const Camera = () => {
 
         {/* Results Section */}
         {analysis && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Food Packaging Analysis</CardTitle>
-                  <div className="flex gap-2">
-                    <Button
-                      variant={feedback === 'positive' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => handleFeedback('positive')}
-                    >
-                      <ThumbsUp className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant={feedback === 'negative' ? 'destructive' : 'outline'}
-                      size="sm"
-                      onClick={() => handleFeedback('negative')}
-                    >
-                      <ThumbsDown className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-
+          <div className="space-y-4">
             <MaterialAnalysisView materials={analysis.materials} />
+            <div className="flex justify-center gap-2">
+              <Button
+                variant={feedback === 'positive' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleFeedback('positive')}
+              >
+                <ThumbsUp className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={feedback === 'negative' ? 'destructive' : 'outline'}
+                size="sm"
+                onClick={() => handleFeedback('negative')}
+              >
+                <ThumbsDown className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         )}
       </div>
