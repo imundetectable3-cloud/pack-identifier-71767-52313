@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Atom, FileText, Shield, Ruler, Weight, Utensils, Package } from "lucide-react";
+import { Atom, FileText, Shield, Ruler, Weight, Utensils, Package, ZoomIn } from "lucide-react";
 
 interface Material {
   type: string;
@@ -25,6 +25,7 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
   const [selectedMaterial, setSelectedMaterial] = useState<number | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<PropertyType | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
 
   const propertyButtons = [
     { id: "chemical" as PropertyType, label: "Chemical Structure", icon: Atom },
@@ -51,11 +52,19 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
         return (
           <div className="space-y-3">
             {material.chemicalStructureImage && (
-              <img 
-                src={material.chemicalStructureImage} 
-                alt="Chemical structure"
-                className="w-full max-w-sm h-48 mx-auto bg-white p-4 rounded border object-contain"
-              />
+              <div className="relative group">
+                <img 
+                  src={material.chemicalStructureImage} 
+                  alt="Chemical structure"
+                  className="w-full max-w-sm h-48 mx-auto bg-white p-4 rounded border object-contain cursor-pointer transition-transform hover:scale-[1.02]"
+                  onClick={() => setEnlargedImage(material.chemicalStructureImage)}
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <div className="bg-background/80 backdrop-blur-sm rounded-full p-2">
+                    <ZoomIn className="w-6 h-6" />
+                  </div>
+                </div>
+              </div>
             )}
             <ul className="list-disc list-inside space-y-1">
               <li>Formula: {material.chemicalFormula}</li>
@@ -202,6 +211,25 @@ export const MaterialAnalysisView = ({ materials }: MaterialAnalysisViewProps) =
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Enlarged Image Dialog */}
+      <Dialog open={!!enlargedImage} onOpenChange={() => setEnlargedImage(null)}>
+        <DialogContent className="max-w-4xl animate-fade-in">
+          <DialogHeader>
+            <DialogTitle>Chemical Structure (Enlarged)</DialogTitle>
+            <DialogDescription>Click outside or press ESC to close</DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            {enlargedImage && (
+              <img 
+                src={enlargedImage} 
+                alt="Chemical structure enlarged"
+                className="w-full h-auto bg-white p-6 rounded border object-contain"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
