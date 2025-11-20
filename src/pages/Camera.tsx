@@ -205,7 +205,29 @@ const Camera = () => {
         body: { imageBase64: selectedImage },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check if it's a credits error (402)
+        if (error.message?.includes("AI credits exhausted") || error.message?.includes("402")) {
+          toast({
+            title: "AI Credits Exhausted",
+            description: "Please add credits to your Lovable workspace to continue using AI analysis. Go to Settings → Workspace → Usage to add credits.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        // Check if it's a rate limit error (429)
+        if (error.message?.includes("Rate limit") || error.message?.includes("429")) {
+          toast({
+            title: "Rate Limit Exceeded",
+            description: "Too many requests. Please wait a moment and try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        throw error;
+      }
 
       setAnalysis(data);
       setFeedback(null);
@@ -214,6 +236,7 @@ const Camera = () => {
         description: "Packaging materials have been identified successfully.",
       });
     } catch (error: any) {
+      console.error("Analysis error:", error);
       toast({
         title: "Analysis Failed",
         description: error?.message || "Failed to analyze the image. Please try again.",
