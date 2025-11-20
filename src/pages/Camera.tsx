@@ -89,28 +89,62 @@ const Camera = () => {
 
   const capturePhoto = () => {
     const video = videoRef.current;
-    if (!video || !streamRef.current) return;
+    if (!video || !streamRef.current) {
+      console.error("Video or stream not available");
+      toast({
+        title: "Camera Error",
+        description: "Camera not available. Please try opening camera again.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     // Ensure video metadata is loaded
     if (video.videoWidth === 0 || video.videoHeight === 0) {
+      console.log("Video metadata not ready, retrying...");
       video.play().then(() => {
         requestAnimationFrame(() => capturePhoto());
-      }).catch(() => {
+      }).catch((error) => {
+        console.error("Video play error:", error);
         toast({
           title: "Camera not ready",
           description: "Please wait a moment and try again.",
+          variant: "destructive",
         });
       });
       return;
     }
 
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.drawImage(video, 0, 0);
-      const imageData = canvas.toDataURL("image/jpeg", 0.8);
+    try {
+      console.log("Capturing photo from video:", video.videoWidth, "x", video.videoHeight);
+      
+      // Create canvas with max dimensions to reduce file size
+      const maxWidth = 1280;
+      const maxHeight = 720;
+      let width = video.videoWidth;
+      let height = video.videoHeight;
+      
+      // Calculate scaling to fit within max dimensions
+      if (width > maxWidth || height > maxHeight) {
+        const scale = Math.min(maxWidth / width, maxHeight / height);
+        width = Math.floor(width * scale);
+        height = Math.floor(height * scale);
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("Failed to get canvas context");
+      }
+      
+      ctx.drawImage(video, 0, 0, width, height);
+      const imageData = canvas.toDataURL("image/jpeg", 0.7);
+      
+      console.log("Image captured, size:", Math.round(imageData.length / 1024), "KB");
+      
       setSelectedImage(imageData);
       setIsCameraMode(false);
 
@@ -121,6 +155,13 @@ const Camera = () => {
       toast({
         title: "Photo Captured",
         description: "Image captured successfully. Click Analyze to proceed.",
+      });
+    } catch (error) {
+      console.error("Capture error:", error);
+      toast({
+        title: "Capture Failed",
+        description: "Failed to capture photo. Please try again.",
+        variant: "destructive",
       });
     }
   };
