@@ -31,6 +31,7 @@ const Camera = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [isCameraMode, setIsCameraMode] = useState(false);
+  const [isLoadingCamera, setIsLoadingCamera] = useState(false);
   const [feedback, setFeedback] = useState<'positive' | 'negative' | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -59,6 +60,7 @@ const Camera = () => {
   };
 
   const startCamera = async () => {
+    setIsLoadingCamera(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -73,12 +75,14 @@ const Camera = () => {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
           videoRef.current?.play().catch(() => {});
+          setIsLoadingCamera(false);
         };
       }
       setIsCameraMode(true);
       setSelectedImage(null);
       setAnalysis(null);
     } catch (error: any) {
+      setIsLoadingCamera(false);
       toast({
         title: "Camera Error",
         description: error?.message || "Failed to access camera. Please check permissions.",
@@ -278,6 +282,19 @@ const Camera = () => {
             {isCameraMode && (
               <div className="space-y-4">
                 <div className="relative w-full h-56 sm:h-64 bg-muted rounded-lg overflow-hidden animate-fade-in">
+                  {isLoadingCamera && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/90 z-10 animate-fade-in">
+                      <div className="relative">
+                        <CameraIcon className="w-12 h-12 text-muted-foreground animate-pulse" />
+                        <div className="absolute inset-0 animate-ping">
+                          <CameraIcon className="w-12 h-12 text-primary/30" />
+                        </div>
+                      </div>
+                      <p className="mt-4 text-sm text-muted-foreground animate-pulse">
+                        Initializing camera...
+                      </p>
+                    </div>
+                  )}
                   <video
                     ref={videoRef}
                     autoPlay
@@ -287,12 +304,18 @@ const Camera = () => {
                   />
                 </div>
                 <div className="flex gap-2">
-                  <Button onClick={capturePhoto} className="flex-1" size="lg">
+                  <Button 
+                    onClick={capturePhoto} 
+                    className="flex-1" 
+                    size="lg"
+                    disabled={isLoadingCamera}
+                  >
                     Capture Photo
                   </Button>
                   <Button
                     onClick={() => {
                       setIsCameraMode(false);
+                      setIsLoadingCamera(false);
                       if (streamRef.current) {
                         streamRef.current.getTracks().forEach(track => track.stop());
                       }
