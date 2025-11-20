@@ -110,7 +110,7 @@ const Camera = () => {
     const ctx = canvas.getContext("2d");
     if (ctx) {
       ctx.drawImage(video, 0, 0);
-      const imageData = canvas.toDataURL("image/jpeg");
+      const imageData = canvas.toDataURL("image/jpeg", 0.8);
       setSelectedImage(imageData);
       setIsCameraMode(false);
 
