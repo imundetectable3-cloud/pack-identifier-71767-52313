@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Camera as CameraIcon, Recycle, Leaf, Save, ThumbsUp, ThumbsDown, Package, Info } from "lucide-react";
+import { Upload, Camera as CameraIcon, Recycle, Leaf, Save, ThumbsUp, ThumbsDown, Package, Info, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -32,6 +32,7 @@ const Camera = () => {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [isCameraMode, setIsCameraMode] = useState(false);
   const [feedback, setFeedback] = useState<'positive' | 'negative' | null>(null);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
@@ -60,30 +61,52 @@ const Camera = () => {
 
   const startCamera = async () => {
     try {
+      // Stop any existing stream first
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+
+      console.log("Starting camera with facing mode:", facingMode);
+      
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: { ideal: "environment" },
+          facingMode: { ideal: facingMode },
           width: { ideal: 1280 },
           height: { ideal: 720 },
         },
         audio: false,
       });
+      
+      console.log("Camera stream obtained:", stream.getVideoTracks()[0].getSettings());
+      
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
-          videoRef.current?.play().catch(() => {});
+          console.log("Video metadata loaded");
+          videoRef.current?.play().catch((err) => {
+            console.error("Play error:", err);
+          });
         };
       }
       setIsCameraMode(true);
       setSelectedImage(null);
       setAnalysis(null);
     } catch (error: any) {
+      console.error("Camera error:", error);
       toast({
         title: "Camera Error",
         description: error?.message || "Failed to access camera. Please check permissions.",
         variant: "destructive",
       });
+    }
+  };
+
+  const switchCamera = async () => {
+    const newFacingMode = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(newFacingMode);
+    if (isCameraMode) {
+      await startCamera();
     }
   };
 
@@ -318,14 +341,23 @@ const Camera = () => {
 
             {isCameraMode && (
               <div className="space-y-4">
-                <div className="relative w-full h-56 sm:h-64 bg-muted rounded-lg overflow-hidden animate-fade-in">
+                <div className="relative w-full h-64 sm:h-80 bg-muted rounded-lg overflow-hidden animate-fade-in">
                   <video
                     ref={videoRef}
                     autoPlay
                     playsInline
                     muted
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover"
+                    style={{ transform: facingMode === 'user' ? 'scaleX(-1)' : 'none' }}
                   />
+                  <Button
+                    onClick={switchCamera}
+                    variant="secondary"
+                    size="icon"
+                    className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm"
+                  >
+                    <RefreshCw className="w-5 h-5" />
+                  </Button>
                 </div>
                 <div className="flex gap-2">
                   <Button onClick={capturePhoto} className="flex-1" size="lg">
