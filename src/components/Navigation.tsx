@@ -1,47 +1,7 @@
-import { Home, Camera, FileText, Bookmark, LogOut, LogIn } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "./ui/button";
-import { useState, useEffect } from "react";
-import { Session } from "@supabase/supabase-js";
+import { Home, Camera, FileText, Bookmark } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 const Navigation = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [session, setSession] = useState<Session | null>(null);
-
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to log out. Please try again.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Logged out",
-        description: "You've been successfully logged out.",
-      });
-      navigate("/auth");
-    }
-  };
-
   const navItems = [
     { to: "/", icon: Home, label: "Home" },
     { to: "/camera", icon: Camera, label: "Camera" },
@@ -70,27 +30,6 @@ const Navigation = () => {
               <span className="text-xs font-medium">{item.label}</span>
             </NavLink>
           ))}
-          {session ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className="flex flex-col items-center gap-1 px-4 py-2 h-auto"
-            >
-              <LogOut className="w-5 h-5" />
-              <span className="text-xs font-medium">Logout</span>
-            </Button>
-          ) : (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/auth")}
-              className="flex flex-col items-center gap-1 px-4 py-2 h-auto"
-            >
-              <LogIn className="w-5 h-5" />
-              <span className="text-xs font-medium">Login</span>
-            </Button>
-          )}
         </div>
       </div>
     </nav>
