@@ -276,72 +276,13 @@ const response = await fetch('https://api.perplexity.ai/chat/completions', {
   };
 
   const saveAnalysis = async () => {
-    if (!analysis || !selectedImage) return;
-
-    setIsSaving(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+    // Save function disabled - database backend not configured
         toast({
-          title: "Authentication Required",
-          description: "Please log in to save analyses.",
-          variant: "destructive",
-        });
-        navigate("/auth");
-        return;
-      }
-
-      // Upload image to storage
-      const fileName = `${session.user.id}/${Date.now()}.jpg`;
-      const base64Data = selectedImage.split(",")[1];
-      const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(r => r.blob());
-
-      const { error: uploadError } = await supabase.storage
-        .from("analyses")
-        .upload(fileName, blob);
-
-      if (uploadError) throw uploadError;
-
-      // Use untyped client to avoid missing types during generation
-      const sb = supabase as unknown as SupabaseClient;
-
-      // Save analysis to database
-      const { error: dbError } = await sb
-        .from("saved_analyses")
-        .insert([{
-          user_id: session.user.id,
-          image_url: fileName,
-          materials: analysis.materials,
-          overall_analysis: 'Food packaging analysis',
-        }]);
-
-      if (dbError) throw dbError;
-
-      toast({
-        title: "Analysis Saved",
-        description: "Your analysis has been saved successfully.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Save Failed",
-        description: error.message || "Failed to save analysis. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleFeedback = async (type: 'positive' | 'negative') => {
-    setFeedback(type);
-    toast({
-      title: type === 'positive' ? "Thanks for the feedback!" : "Feedback noted",
-      description: type === 'positive' 
-        ? "Your positive feedback helps improve our AI." 
-        : "We'll use this to improve our analysis accuracy.",
-    });
-  };
-
+                title: "Save Not Available",
+                description: "Database backend not configured. Analysis cannot be saved.",
+                variant: "destructive",
+              });
+      };
   return (
     <div className="min-h-screen h-screen overflow-hidden bg-background pb-20 flex flex-col">
       <div className="container mx-auto px-4 py-6 flex-1 overflow-y-auto">
