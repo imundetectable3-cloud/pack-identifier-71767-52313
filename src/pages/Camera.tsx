@@ -4,8 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Upload, Camera as CameraIcon, Recycle, Leaf, Save, ThumbsUp, ThumbsDown, Package, Info, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
 import { MaterialAnalysisView } from "@/components/MaterialAnalysisView";
@@ -201,16 +199,46 @@ const Camera = () => {
 
     setIsAnalyzing(true);
     try {
-      const { data, error } = await supabase.functions.invoke("analyze-packaging", {
-        body: { imageBase64: selectedImage },
+const response = await fetch('https://api.perplexity.ai/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_PERPLEXITY_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-sonar-large-128k-online',
+          messages: [
+            {
+              role: 'user',
+              content: `Analyze this packaging image and identify: 1) Type of packaging material, 2) Chemical formula, 3) Chemical structure image URL, 4) FSS AI limits (as string array), 5) BIS limits (as string array), 6) Thickness (string), 7) GSM (string), 8) Food applications (as string array). Return ONLY a JSON object with these exact keys: type, chemicalFormula, chemicalStructureImage, fssaiLimits, bisLimits, thickness, gsm, foodApplications. Image data: ${selectedImage}`,
+            },
+          ],
+        }),
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'API request failed');
+      }
+      
+      const responseData = await response.json();
+      const content = responseData.choices[0].message.content;
+      
+      // Parse the JSON from the response
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No valid JSON found in response');
+      }
+      
+      const data = JSON.parse(jsonMatch[0]);
+      const error = null
 
       if (error) {
         // Check if it's a credits error (402)
         if (error.message?.includes("AI credits exhausted") || error.message?.includes("402")) {
           toast({
             title: "AI Credits Exhausted",
-            description: "Please add credits to your Lovable workspace to continue using AI analysis. Go to Settings → Workspace → Usage to add credits.",
+            description: "Please add credits to your Perplexity AI workspace to continue using AI analysis. Go to Settings → Workspace → Usage to add credits.",
             variant: "destructive",
           });
           return;
