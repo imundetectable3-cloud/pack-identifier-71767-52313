@@ -17,7 +17,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/pack-identifier-71767-52313">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/camera" element={<Camera />} />
